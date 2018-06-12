@@ -6,75 +6,34 @@
 #' @export
 mbenchmark <- function(x, access_pattern, num_threads, clear_page_cache, ...)UseMethod("mbenchmark")
 
-mbenchmark.list <- function(x, access_pattern = c("region_selection", "random_slice", "row_traverse", "col_traverse"), ...) {
+mbenchmark.list <- function(x, access_pattern = c("region_selection", "random_slicing", "row_traversal", "col_traversal"), ...) {
   lapply(access_pattern, function(op){
     op <- paste0("mbenchmark_", op)
     do.call(op, list(...))
   })
 }
 
-#' @param shape vectors of colsize-to-rowsize ratio, which defines the shape of the selected region
-#' @param nstride the number of regions to test. with the dimension size evenly increase up to the ubound
-#' @param ubound the upper bound of size of region to select. It is the percentage of the maximum rows
-#' @importFrom plyr ldply
 #' @examples
 #' mat <- matrix(seq_len(2e6), nrow = 1e3, ncol =2e3)
 #' res <- mbenchmark_region_selection(mat, ubound = 1)
 #' autoplot(res)
-mbenchmark_region_selection <- function(x, shape = c(0.5, 1, 2), nstride = 5, ubound = 0.1,  num_threads = 1, times = 5L, clear_page_cache = FALSE, verbose = TRUE){
-  if(!is.list(x))
-    x <- list(a = x)
-
-  mat <- x[[1]]
-  dims <- dim(mat)
-  nrow <- dims[1]
-  ncol <- dims[2]
-  row_start <- col_start <- 1
-  row_stride <- floor(nrow * ubound/nstride)
-  res <- ldply(shape, function(ratio){
-    message("region shape (nrow / ncol):", shape)
-    col_stride <- floor(row_stride * ratio)
-    res <- ldply(seq_len(nstride), function(i)
-    {
-      # browser()
-      row_size <- row_stride * i
-      row_end <- row_start + row_size - 1
-      ridx <- row_start:row_end
-      col_size <- col_stride * i
-      col_end <- col_start + col_size - 1
-      if(col_end>ncol)
-      {
-        warning("col idx out of bound!", col_end)
-        return(NULL)
-      }
-      cidx <- col_start:col_end
-      if(verbose)
-        message("row = ", row_start, ":", row_end, " col = ", col_start, ":", col_end)
-      res <- ldply(seq_len(times), function(j)
-      {
-        if(clear_page_cache)
-        {
-          stop("clear_page_cache not supported yet!")
-        }
-        res <- ldply(names(x), function(dsname){
-          # message(dsname)
-          mat <- x[[dsname]]
-          system.time(v <- mat[ridx, cidx])[["elapsed"]]
-        })
-        res[["timeid"]] <- j
-        res
-      })
-      res[["row_size"]] <- row_size
-      # res[["size"]] <- paste0(row_size, "x", col_size)
-      res
-    })
-    res[["nrow/ncol"]] <- ratio
-    res
-  })
-  attr(res, "class") <- c("region", "mbenchmark",attr(res, "class"))
-  res
+#' smat <- Matrix(mat, sparse = TRUE)
+#' res <- mbenchmark_random_slicing(list(dense = mat, sparse = smat), ubound = 0.5)
+#' autoplot(res)
+mbenchmark_region_selection <- function(x, ...){
+  mbenchmark_index(x, type = "region_selection", ...)
 }
 
+mbenchmark_random_slicing <- function(x, ...){
+  mbenchmark_index(x, type = "random_slicing", ...)
+}
 autoplot.mbenchmark <- function(object, ...){
-  ggplot(object, aes(x = row_size, y = V1)) + geom_point() + geom_line() + facet_grid(timeid~`nrow/ncol`)
+  object <- object[, time := mean(time)
+                   , by = c("dataset", "nrow/ncol", "nrow")
+                   ]
+ p <-  ggplot(object, aes(x = nrow, y = time, color = dataset)) + geom_point() + geom_line()
+ p <- p + facet_wrap(~`nrow/ncol`)
+ p <- p + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+p
 }
+
