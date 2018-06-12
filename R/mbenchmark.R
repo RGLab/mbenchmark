@@ -1,13 +1,13 @@
 #' @param x list of objects representing matrix containers that support subsetting method `[` and `dim`. (such as `DelayedArray`)`
-#' @param access_pattern the type of operations to be measured
+#' @param tasks the type of operations to be measured
 #' @param num_threads parallel number
 #' @param clear_page_cache whether to flush page cache between iterations
 #' @param ... passed
 #' @export
-mbenchmark <- function(x, access_pattern, num_threads, clear_page_cache, ...)UseMethod("mbenchmark")
+mbenchmark <- function(x, tasks, num_threads, clear_page_cache, ...)UseMethod("mbenchmark")
 
-mbenchmark.list <- function(x, access_pattern = c("region_selection", "random_slicing", "row_traversal", "col_traversal"), ...) {
-  lapply(access_pattern, function(op){
+mbenchmark.list <- function(x, tasks = c("region_selection", "random_slicing", "row_traversal", "col_traversal"), ...) {
+  lapply(tasks, function(op){
     op <- paste0("mbenchmark_", op)
     do.call(op, list(...))
   })
@@ -20,10 +20,12 @@ mbenchmark.list <- function(x, access_pattern = c("region_selection", "random_sl
 #' smat <- Matrix(mat, sparse = TRUE)
 #' res <- mbenchmark_random_slicing(list(dense = mat, sparse = smat), ubound = 0.5)
 #' autoplot(res)
+#' @export
 mbenchmark_region_selection <- function(x, ...){
   mbenchmark_index(x, type = "region_selection", ...)
 }
 
+#' @export
 mbenchmark_random_slicing <- function(x, ...){
   mbenchmark_index(x, type = "random_slicing", ...)
 }

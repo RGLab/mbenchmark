@@ -1,0 +1,55 @@
+---
+title: "mbenchmark: benchmarking the common matrix operations"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+This is a generic framework for benchmarking the common matrix operations among different matrix formats.
+
+* subsetting
+  * continuous region selection
+  * non-continuous random slicing
+* traversing
+  * row-wise
+  * col-wise
+
+## Takes a list of different `matrix` containers/objects as input
+The only requirements for the `matrix` object is:
+* support `[` indexing method for subsetting
+* `dims` accessors to retrieve dimension information
+
+```{r message=FALSE}
+library(Matrix)
+library(mbenchmark)
+mat <- matrix(seq_len(2e6), nrow = 1e3, ncol =2e3)
+smat <- Matrix(mat, sparse = TRUE)
+mat.list <- list(dense = mat, sparse = smat)
+```
+## Run each task (by `mbenchmark_*` function) separately
+```{r}
+#mbenchmark_random_slicing(mat.list)
+res <- mbenchmark_region_selection(mat.list)
+```
+
+Results are collected as `a data.table`, which is easy to query or facetting.
+```{r}
+head(res)
+```
+
+
+To quickly visualize the results
+
+```{r cars}
+autoplot(res)
+```
+
+## Run all the tasks with `mbenchmark` wrapper
+```{r eval=FALSE}
+mbenchmark(mat.list, tasks = c("region_selection", "random_slicing"))
+```
+
