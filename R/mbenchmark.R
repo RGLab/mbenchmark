@@ -15,6 +15,7 @@
 #' }
 mbenchmark <- function(x, type, num_threads, clear_page_cache, ...)UseMethod("mbenchmark")
 
+#' @export
 mbenchmark.list <- function(x, type = c("subsetting", "traversing"), ...) {
   type <- match.arg(type)
   op <- paste0("mbenchmark_", type)
@@ -43,7 +44,7 @@ autoplot.mbenchmark_subsetting <- function(object, ...){
   object <- object[, `nrow/ncol` := paste0("nrow/ncol = ", `nrow/ncol`)]
   p <-  ggplot(object, aes(x = nrow, y = time, color = dataset)) + geom_point() + geom_line()
   p <- p + theme(axis.text.x = element_text(angle = 45, hjust = 1))
-  p <- p + facet_grid(task~`nrow/ncol`)
+  p <- p + facet_grid(task~`nrow/ncol`, scales="free")
   p
 }
 

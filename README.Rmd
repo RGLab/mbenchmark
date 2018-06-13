@@ -12,18 +12,19 @@ knitr::opts_chunk$set(echo = TRUE)
 This is a generic framework for benchmarking the common matrix operations among different matrix file formats.
 
 * subsetting
-  * `region_selection`: continuous block selection
-  * `random_slicing`: non-continuous slab selection
+    * `region_selection`: continuous block selection
+    * `random_slicing`: non-continuous slab selection
 * traversing
-  * `rowSums`
-  * `colSums`
+    * `rowSums`
+    * `colSums`
 
 ## Takes a list of different `matrix` containers/objects as input
-The only requirements for the `matrix` object is:
+The only requirements for the `matrix` object are:
+
 * support `[` indexing method for subsetting
 * `dim` accessors to retrieve dimension information
 
-```{r message=FALSE}
+```{r message=FALSE,warning=FALSE,results='hide'}
 library(mbenchmark)
 mat <- matrix(seq_len(2e6), nrow = 1e3, ncol =2e3)
 dims <- dim(mat)
@@ -51,9 +52,10 @@ utils:::format.object_size(file.size(ff.file), units = "Mb")
 ```
 
 ## Run `subsetting` benchmark
-```{r eval=FALSE}
+```{r}
 mat.list <- list(bigmemory = bm, ff = fm, h5 = hm)
-res <- mbenchmark(mat.list, type = "subsetting", times = 3, ubound = 0.9) #ubound specify the upper bound of the size of the subset. It is the value of the maximum percentage of original matrix
+#ubound specify the upper bound of the size of the subset. It is the value of the maximum percentage of original matrix
+res <- mbenchmark(mat.list, type = "subsetting", times = 3, ubound = 0.9, verbose = FALSE) 
 ```
 
 
@@ -62,15 +64,19 @@ Results are collected as a `data.table`, which is easy to query or facetting.
 head(res)
 ```
 
-
-To quickly visualize the results
+## Quick plot
 
 ```{r cars}
 autoplot(res)
 ```
+
 ## Run `traversing` benchmark
 ```{r eval=FALSE}
 mat.list <- list(bigmemory = bm, ff = fm, h5 = hm)
 res <- mbenchmark(mat.list, type = "traversing")
 ```
 
+## Todo
+* `clear_page_cache`
+* `parallel` IO
+* More matrix operations
