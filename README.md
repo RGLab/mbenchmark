@@ -39,7 +39,8 @@ h5createFile(h5.file)
 h5createDataset(h5.file, "data", dims, storage.mode = "double", chunk=c(100,100), level=7)
 h5write(mat, h5.file,"data")
 utils:::format.object_size(file.size(h5.file), units = "Mb")
-hm = h5read(h5.file,"data")
+library(HDF5Array)
+hm = HDF5Array(h5.file, "data")
 
 library(ff)
 ff.file <- tempfile()
@@ -79,12 +80,12 @@ head(res)
 ```
 
     ##     time   dataset timeid nrow nrow/ncol           task
-    ## 1: 0.001 bigmemory      1  180       0.5 random_slicing
+    ## 1: 0.002 bigmemory      1  180       0.5 random_slicing
     ## 2: 0.002        ff      1  180       0.5 random_slicing
-    ## 3: 0.001        h5      1  180       0.5 random_slicing
-    ## 4: 0.000 bigmemory      2  180       0.5 random_slicing
+    ## 3: 0.149        h5      1  180       0.5 random_slicing
+    ## 4: 0.001 bigmemory      2  180       0.5 random_slicing
     ## 5: 0.002        ff      2  180       0.5 random_slicing
-    ## 6: 0.000        h5      2  180       0.5 random_slicing
+    ## 6: 0.164        h5      2  180       0.5 random_slicing
 
 Quick plot
 ----------
