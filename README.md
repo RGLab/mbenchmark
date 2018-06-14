@@ -30,7 +30,7 @@ dims <- dim(mat)
 library(bigmemory)
 bm.file <- tempfile()
 suppressMessages(bm <- as.big.matrix(mat, backingfile = basename(bm.file), backingpath = dirname(bm.file)))
-utils:::format.object_size(file.size(bm.file), units = "Mb")
+# bm <- DelayedArray(bm)
 
 #h5
 library(rhdf5)
@@ -38,21 +38,58 @@ h5.file <- tempfile()
 h5createFile(h5.file)
 h5createDataset(h5.file, "data", dims, storage.mode = "double", chunk=c(100,100), level=7)
 h5write(mat, h5.file,"data")
-utils:::format.object_size(file.size(h5.file), units = "Mb")
 library(HDF5Array)
 hm = HDF5Array(h5.file, "data")
 
 library(ff)
 ff.file <- tempfile()
 fm <- ff(mat, vmode="double", dim=dims, filename = ff.file)
+```
+
+Compare disk usage
+------------------
+
+``` r
+mat.list <- list(bigmemory = bm, ff = fm, h5 = hm)
+
+utils:::format.object_size(file.size(bm.file), units = "Mb")
+```
+
+    ## [1] "7.6 Mb"
+
+``` r
+utils:::format.object_size(file.size(h5.file), units = "Mb")
+```
+
+    ## [1] "2.8 Mb"
+
+``` r
 utils:::format.object_size(file.size(ff.file), units = "Mb")
 ```
+
+    ## [1] "15.3 Mb"
+
+Compare memory usage
+--------------------
+
+``` r
+library(pryr)
+lapply(mat.list, object_size)
+```
+
+    ## $bigmemory
+    ## 696 B
+    ## 
+    ## $ff
+    ## 1.43 kB
+    ## 
+    ## $h5
+    ## 1.97 kB
 
 Run `subsetting` benchmark
 --------------------------
 
 ``` r
-mat.list <- list(bigmemory = bm, ff = fm, h5 = hm)
 #ubound specify the upper bound of the size of the subset. It is the value of the maximum percentage of original matrix
 res <- mbenchmark(mat.list, type = "subsetting", times = 3, ubound = 0.9, verbose = FALSE) 
 ```
@@ -82,10 +119,10 @@ head(res)
     ##     time   dataset timeid nrow nrow/ncol           task
     ## 1: 0.002 bigmemory      1  180       0.5 random_slicing
     ## 2: 0.002        ff      1  180       0.5 random_slicing
-    ## 3: 0.149        h5      1  180       0.5 random_slicing
+    ## 3: 0.158        h5      1  180       0.5 random_slicing
     ## 4: 0.001 bigmemory      2  180       0.5 random_slicing
     ## 5: 0.002        ff      2  180       0.5 random_slicing
-    ## 6: 0.164        h5      2  180       0.5 random_slicing
+    ## 6: 0.135        h5      2  180       0.5 random_slicing
 
 Quick plot
 ----------

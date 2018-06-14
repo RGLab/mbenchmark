@@ -33,7 +33,7 @@ dims <- dim(mat)
 library(bigmemory)
 bm.file <- tempfile()
 suppressMessages(bm <- as.big.matrix(mat, backingfile = basename(bm.file), backingpath = dirname(bm.file)))
-bm <- DelayedArray(bm)
+# bm <- DelayedArray(bm)
 
 #h5
 library(rhdf5)
@@ -80,7 +80,7 @@ head(res)
 
 ## Quick plot
 
-```{r cars}
+```{r}
 autoplot(res)
 ```
 
