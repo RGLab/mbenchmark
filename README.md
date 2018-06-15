@@ -91,7 +91,7 @@ Run `subsetting` benchmark
 
 ``` r
 #ubound specify the upper bound of the size of the subset. It is the value of the maximum percentage of original matrix
-res <- mbenchmark(mat.list, type = "subsetting", times = 3, ubound = 0.9, verbose = FALSE) 
+res <- mbenchmark(mat.list, type = "subsetting", times = 3, ubound = 0.9, trace_mem = TRUE, verbose = FALSE) 
 ```
 
     ## random_slicing
@@ -116,13 +116,13 @@ Results are collected as a `data.table`, which is easy to query or facetting.
 head(res)
 ```
 
-    ##     time   dataset timeid nrow nrow/ncol           task
-    ## 1: 0.002 bigmemory      1  180       0.5 random_slicing
-    ## 2: 0.002        ff      1  180       0.5 random_slicing
-    ## 3: 0.158        h5      1  180       0.5 random_slicing
-    ## 4: 0.001 bigmemory      2  180       0.5 random_slicing
-    ## 5: 0.002        ff      2  180       0.5 random_slicing
-    ## 6: 0.135        h5      2  180       0.5 random_slicing
+    ##     time mem_change   dataset timeid nrow nrow/ncol           task
+    ## 1: 0.003         12 bigmemory      1  180       0.5 random_slicing
+    ## 2: 0.003         -4        ff      1  180       0.5 random_slicing
+    ## 3: 0.159         20        h5      1  180       0.5 random_slicing
+    ## 4: 0.000          0 bigmemory      2  180       0.5 random_slicing
+    ## 5: 0.002          0        ff      2  180       0.5 random_slicing
+    ## 6: 0.139          0        h5      2  180       0.5 random_slicing
 
 Quick plot
 ----------
@@ -131,7 +131,13 @@ Quick plot
 autoplot(res)
 ```
 
-![](README_files/figure-markdown_github/cars-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-6-1.png)
+
+``` r
+plot_mem(res, units = "Kb")
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 Run `traversing` benchmark
 --------------------------
