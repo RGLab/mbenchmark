@@ -85,7 +85,7 @@ autoplot(res)
 ```
 
 ```{r}
-plot_mem(res)
+plot_mem(res, units = "Kb")
 ```
 
 ## Run `traversing` benchmark

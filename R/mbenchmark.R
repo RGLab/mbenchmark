@@ -49,6 +49,7 @@ autoplot.mbenchmark_subsetting <- function(object, ...){
   p
 }
 
+#' @export
 plot_mem <- function(object, units = "Kb"){
   object <- object[timeid == 1, ]
   object[, mem_change := utils:::format.object_size(mem_change, units = units)]

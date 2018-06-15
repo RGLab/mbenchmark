@@ -6,7 +6,7 @@ Author: Mike Jiang
 Maintainer: Mike Jiang <wjiang2@fredhutch.org>
 Description: This package provides the functions to benchmark the basic common operations on the on-disk matrix format.
     Such as region selection, random slicing and row/col statistics.
-Imports: data.table
+Imports: data.table, DelayedArray, BiocGenerics
 Depends: ggplot2
 License: GPL
 Encoding: UTF-8
