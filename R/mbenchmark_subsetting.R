@@ -10,9 +10,12 @@
 #' res <- mbenchmark_subsetting(mat.list, times = 2, nsubset = 3)
 #' autoplot(res)
 #' }
-mbenchmark_subsetting <- function(x, type = c("random_slicing", "region_selection"), shape = c(0.5, 1, 2), nsubset = 5, ubound = 0.1,  num_threads = 1, times = 5L, clear_page_cache = FALSE, verbose = TRUE){
+mbenchmark_subsetting <- function(x, type = c("random_slicing", "region_selection"), shape = c(0.5, 1, 2), nsubset = 5, ubound = 0.1,  num_threads = 1, times = 5L, clear_page_cache = FALSE, trace_mem = FALSE, verbose = TRUE){
   if(!is.list(x))
     x <- list(a = x)
+
+  pid <- Sys.getpid()
+  cmd <- paste0("ps -p ", pid, " -o rss --no-headers")
 
   mat <- x[[1]]
   dims <- dim(mat)
@@ -69,8 +72,26 @@ mbenchmark_subsetting <- function(x, type = c("random_slicing", "region_selectio
           records <- new.env(parent = emptyenv())
 
           res <- .ldply(names(x), function(dsname){
+            #track mem
+            if(trace_mem && num_threads == 1 && j == 1)
+            {
+              gc()#return mem to os
+              gc()
+              mem <- as.integer(system(cmd, intern = TRUE))
+            }
+
 
             t <- system.time(v <- as.matrix(x[[dsname]][ridx, cidx]))[["elapsed"]]
+
+            #track mem change
+            if(trace_mem && num_threads == 1 && j == 1)
+            {
+              mem <- as.integer(system(cmd, intern = TRUE)) - mem
+              gc()#return mem to os
+              gc()#somehow need it twice to be sussessful
+            }else
+              mem <- 0
+
 
             #validity check on the results
             if(j==1)#only check at first timeiteration
@@ -80,7 +101,7 @@ mbenchmark_subsetting <- function(x, type = c("random_slicing", "region_selectio
                 if(!isTRUE(all.equal(records[["first"]], v, check.attributes = FALSE)))
                   stop("results from ", dsname, " are not the same as the other dataset!")
 
-              data.table(time = t, dataset = dsname)
+              data.table(time = t, mem_change = mem, dataset = dsname)
           })
 
 

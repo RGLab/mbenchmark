@@ -69,7 +69,7 @@ lapply(mat.list, object_size)
 ## Run `subsetting` benchmark
 ```{r}
 #ubound specify the upper bound of the size of the subset. It is the value of the maximum percentage of original matrix
-res <- mbenchmark(mat.list, type = "subsetting", times = 3, ubound = 0.9, verbose = FALSE) 
+res <- mbenchmark(mat.list, type = "subsetting", times = 3, ubound = 0.9, trace_mem = TRUE, verbose = FALSE) 
 ```
 
 
@@ -82,6 +82,10 @@ head(res)
 
 ```{r}
 autoplot(res)
+```
+
+```{r}
+plot_mem(res)
 ```
 
 ## Run `traversing` benchmark
