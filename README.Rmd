@@ -25,6 +25,7 @@ The only requirements for the `matrix` object are:
 * `dim` accessors to retrieve dimension information
 
 ```{r message=FALSE,warning=FALSE,results='hide'}
+library(HDF5Array)#must load it first to avoid namespace conflicting
 library(mbenchmark)
 mat <- matrix(seq_len(2e6), nrow = 1e3, ncol =2e3)
 dims <- dim(mat)
@@ -33,7 +34,10 @@ dims <- dim(mat)
 library(bigmemory)
 bm.file <- tempfile()
 suppressMessages(bm <- as.big.matrix(mat, backingfile = basename(bm.file), backingpath = dirname(bm.file)))
-# bm <- DelayedArray(bm)
+#wrap it into DelayedArray
+library(DelayedArray)
+bmseed <- BMArraySeed(bm)
+bm <- DelayedArray(bmseed)
 
 #h5
 library(rhdf5)
@@ -41,12 +45,13 @@ h5.file <- tempfile()
 h5createFile(h5.file)
 h5createDataset(h5.file, "data", dims, storage.mode = "double", chunk=c(100,100), level=7)
 h5write(mat, h5.file,"data")
-library(HDF5Array)
+#wrap it into DelayedArray
 hm = HDF5Array(h5.file, "data")
 
 library(ff)
 ff.file <- tempfile()
 fm <- ff(mat, vmode="double", dim=dims, filename = ff.file)
+fm <- DelayedArray(fm)
 
 ```
 ## Compare disk usage
