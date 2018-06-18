@@ -166,7 +166,7 @@ autoplot(res)
 ## Error in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : X11 font -adobe-helvetica-%s-%s-*-*-%d-*-*-*-*-*-*-*, face 1 at size 9 could not be loaded
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png)
+![plot of chunk unnamed-chunk-6](README_files/figure-markdown_github/unnamed-chunk-6-1.png)
 
 
 ```r
@@ -177,7 +177,7 @@ plot_mem(res, units = "Kb")
 ## Error in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : X11 font -adobe-helvetica-%s-%s-*-*-%d-*-*-*-*-*-*-*, face 1 at size 9 could not be loaded
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png)
+![plot of chunk unnamed-chunk-7](README_files/figure-markdown_github//unnamed-chunk-7-1.png)
 
 ## Run `traversing` benchmark
 
