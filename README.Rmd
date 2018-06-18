@@ -53,14 +53,18 @@ ff.file <- tempfile()
 fm <- ff(mat, vmode="double", dim=dims, filename = ff.file)
 fm <- DelayedArray(fm)
 
+library(matter)
+mm <- matter_mat(mat)
+mm <- DelayedArray(mm)
 ```
 ## Compare disk usage
 ```{r}
-mat.list <- list(bigmemory = bm, ff = fm, h5 = hm)
+mat.list <- list(bigmemory = bm, ff = fm, h5 = hm, matter = mm)
 
 utils:::format.object_size(file.size(bm.file), units = "Mb")
 utils:::format.object_size(file.size(h5.file), units = "Mb")
 utils:::format.object_size(file.size(ff.file), units = "Mb")
+utils:::format.object_size(file.size(matter::paths(mm@seed)), units = "Mb")
 
 ```
 ## Compare memory usage
