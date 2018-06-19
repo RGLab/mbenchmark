@@ -6,7 +6,7 @@
 setClass("BMArraySeed",
          contains="Array",
          representation(
-           obj = "BigMatrix",
+           obj = "big.matrix",
            filepath="character",       # Absolute path to the HDF5 file so the
            # object doesn't break when the user
            # changes the working directory (e.g. with
@@ -21,7 +21,7 @@ setClass("BMArraySeed",
 #' @export
 BMArraySeed <- function(obj, type=NA)
 {
-  stopifnot(is(obj, "BigMatrix"))
+  stopifnot(is(obj, "big.matrix"))
   # filepath <- dir.name(obj)
   # filepath <- .normarg_path(filepath, "'filepath'")
   # if (!isSingleString(name))
