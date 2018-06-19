@@ -2,6 +2,7 @@
 #thus incompatible with DelayedArray. So we will need this class for proper method dispatch
 #' @exportClass BMArraySeed
 #' @import DelayedArray
+#' @importClassesFrom  bigmemoryExtras BigMatrix
 setClass("BMArraySeed",
          contains="Array",
          representation(
@@ -62,7 +63,6 @@ BMArraySeed <- function(obj, type=NA)
 
 
 #' @importFrom BiocGenerics path
-#' @importClassesFrom  bigmemory big.matrix
 #' @export
 setMethod("path", "BMArraySeed", function(object)file.path(dir.name(object@obj), file.name(object@obj)))
 
