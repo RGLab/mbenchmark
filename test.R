@@ -10,10 +10,10 @@ dims <- dim(hm)
 nblocks <- 100
 
 #bigmemory
-library(bigmemoryExtras)
+library(bigmemory)
 
-bm.file <- file.path(path, "bmext")
-
+# bm.file <- file.path(path, "bm")
+bm.desc <- file.path(path, "bm.desc")
 # bm <- BigMatrix(nrow = dims[1], ncol = dims[2], backingfile = file.path(path, "bm"))
 #
 # i <- 1
@@ -28,7 +28,8 @@ bm.file <- file.path(path, "bmext")
 # }
 # all.equal(as.matrix(hm[,1:3]), as.matrix(bm[,1:3]))
 # saveRDS(bm, file = file.path(path, "bmext"))
-bm <- readRDS(bm.file)
+# bm <- readRDS(bm.file)
+bm <- attach.big.matrix(bm.desc)
 bmseed <- BMArraySeed(bm)
 bm <- DelayedArray(bmseed)
 
@@ -84,6 +85,8 @@ utils:::format.object_size(file.size(mm.file), units = "Mb")
 #                                )
 res <- mbenchmark(mat.list, type = "subsetting", times = 5, ubound = 0.1, trace_mem = TRUE, verbose = T)
 write.csv(res, file = file.path(path, "mbenchres.csv"))
+res <- data.table::fread(file = file.path(path, "mbenchres.csv"))
+class(res) <- c("mbenchmark_subsetting", class(res))
+autoplot(res) + scale_y_log10()
 
-# autoplot(res)
-# plot_mem(res, units = "Kb")
+plot_mem(res, units = "Kb") + scale_y_log10()
