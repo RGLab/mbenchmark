@@ -28,7 +28,7 @@ mbenchmark_subsetting <- function(x, type = c("random_slicing", "region_selectio
     #interate over different subset shapes
     res <- .ldply(shape, function(ratio){
       message("subset shape (nrow / ncol):", ratio)
-      col_stride <- floor(row_stride * ratio)
+      col_stride <- floor(row_stride / ratio)
 
       #iterate over subsets of different sizes
       res <- .ldply(seq_len(nsubset), function(i)
@@ -55,7 +55,15 @@ mbenchmark_subsetting <- function(x, type = c("random_slicing", "region_selectio
           }
           cidx <- col_start:col_end
         }else
+        {
+          if(col_size>ncol)
+          {
+            warning("col_size out of bound!", col_size)
+            return(NULL)
+          }
           cidx <- sample(ncol, col_size)
+        }
+
 
         if(thistype == "region_selection")
           if(verbose)

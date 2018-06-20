@@ -9,10 +9,15 @@ hm = HDF5Array(h5.file, "data")
 dims <- dim(hm)
 nblocks <- 100
 
+# h5.uncomp <- file.path(path, "uncompress_by_gene_sub.h5")
+# hm.uncomp = HDF5Array(h5.uncomp, "data")
+# h5.1k_by_1k <- file.path(path, "gz_1k_1k_sub.h5")
+# hm.1k_by_1k = HDF5Array(h5.uncomp, "data")
+
 #bigmemory
 library(bigmemory)
 
-# bm.file <- file.path(path, "bm")
+bm.file <- file.path(path, "bm")
 bm.desc <- file.path(path, "bm.desc")
 # bm <- BigMatrix(nrow = dims[1], ncol = dims[2], backingfile = file.path(path, "bm"))
 #
@@ -72,21 +77,31 @@ mm <- DelayedArray(mm)
 ## Compare disk usage
 mat.list <- list(bigmemory = bm, ff = fm, h5 = hm, matter = mm)
 
-utils:::format.object_size(file.size(bm@seed@obj$backingfile), units = "Mb")
+utils:::format.object_size(file.size(bm.file), units = "Mb")
 utils:::format.object_size(file.size(h5.file), units = "Mb")
+# utils:::format.object_size(file.size(h5.uncomp), units = "Mb")
 utils:::format.object_size(file.size(ff.file), units = "Mb")
 utils:::format.object_size(file.size(mm.file), units = "Mb")
 
-# ridx <- 1:1e3
+# ridx <- sample(1e4, 1e2)
 # microbenchmark::microbenchmark(as.matrix(bm[ridx, ridx])
-#                                ,as.matrix(fm[ridx, ridx])
-#                                ,as.matrix(mm[ridx, ridx])
+#                                ,as.matrix(hm.1k_by_1k[ridx, ridx])
+#                                ,as.matrix(hm[ridx, ridx])
+#                                # ,as.matrix(fm[ridx, ridx])
+#                                # ,as.matrix(mm[ridx, ridx])
 #                                , times = 3
 #                                )
-res <- mbenchmark(mat.list, type = "subsetting", times = 5, ubound = 0.1, trace_mem = TRUE, verbose = T)
-write.csv(res, file = file.path(path, "mbenchres.csv"))
-res <- data.table::fread(file = file.path(path, "mbenchres.csv"))
-class(res) <- c("mbenchmark_subsetting", class(res))
-autoplot(res) + scale_y_log10()
+res <- mbenchmark(mat.list, type = "subsetting"
+                  , times = 5
+                  , ubound = 0.1
+                  , nsubset = 5
+                  , shape = c(0.01, 0.5, 1, 2, 100)
+                  # , shape = c(1)
+                  , trace_mem = TRUE, verbose = T)
 
-plot_mem(res, units = "Kb") + scale_y_log10()
+write.csv(res, file = file.path(path, "mbenchres.csv"))
+# res <- data.table::fread(file = file.path(path, "mbenchres.csv"))
+# class(res) <- c("mbenchmark_subsetting", class(res))
+# autoplot(res) + scale_y_log10()
+#
+# plot_mem(res, units = "Kb") + scale_y_log10()
