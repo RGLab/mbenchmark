@@ -87,6 +87,16 @@ Results are collected as a `data.table`, which is easy to query or facetting.
 head(res)
 ```
 
+## Resume the long-running task by `cached` results
+
+Some time things could go wrong before the entire benchmarking completes. To save the time, a cached file can be passed
+to the `mbenchmark` so that when this command is re-executed the sub-tasks previously saved in this file will be skipped.
+```{r eval=FALSE}
+cachefile <- tempfile()
+res <- mbenchmark(mat.list, type = "subsetting", cache.file = cachefile) 
+```
+
+
 ## Quick plot
 
 ```{r}
