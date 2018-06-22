@@ -91,17 +91,20 @@ utils:::format.object_size(file.size(mm.file), units = "Mb")
 #                                # ,as.matrix(mm[ridx, ridx])
 #                                , times = 3
 #                                )
+cache.file <- file.path(path, "mbenchres.csv")
 res <- mbenchmark(mat.list, type = "subsetting"
                   , times = 5
                   , ubound = 0.1
                   , nsubset = 5
                   , shape = c(0.01, 0.5, 1, 2, 100)
                   # , shape = c(1)
-                  , trace_mem = TRUE, verbose = T)
+                  , trace_mem = TRUE
+                  , cache.file = cache.file
+                  , verbose = T)
 
-write.csv(res, file = file.path(path, "mbenchres.csv"))
-# res <- data.table::fread(file = file.path(path, "mbenchres.csv"))
-# class(res) <- c("mbenchmark_subsetting", class(res))
-# autoplot(res) + scale_y_log10()
-#
-# plot_mem(res, units = "Kb") + scale_y_log10()
+
+res <- data.table::fread(file = cache.file)
+class(res) <- c("mbenchmark_subsetting", class(res))
+autoplot(res) + scale_y_log10()
+
+plot_mem(res, units = "Kb") + scale_y_log10()
