@@ -99,7 +99,7 @@ lapply(mat.list, object_size)
     ## 2.01 kB
     ## 
     ## $h5
-    ## 1.97 kB
+    ## 1.95 kB
     ## 
     ## $matter
     ## 9.18 kB
@@ -123,12 +123,12 @@ head(res)
 ```
 
     ##     time mem_change   dataset timeid nrow nrow/ncol           task
-    ## 1: 0.025         24 bigmemory      1  180       0.5 random_slicing
-    ## 2: 0.011         28        ff      1  180       0.5 random_slicing
-    ## 3: 0.572          0        h5      1  180       0.5 random_slicing
-    ## 4: 0.054         20    matter      1  180       0.5 random_slicing
-    ## 5: 0.007          0 bigmemory      2  180       0.5 random_slicing
-    ## 6: 0.010          0        ff      2  180       0.5 random_slicing
+    ## 1: 0.036         24 bigmemory      1  180       0.5 random_slicing
+    ## 2: 0.016         28        ff      1  180       0.5 random_slicing
+    ## 3: 0.733          0        h5      1  180       0.5 random_slicing
+    ## 4: 0.059         20    matter      1  180       0.5 random_slicing
+    ## 5: 0.008          0 bigmemory      2  180       0.5 random_slicing
+    ## 6: 0.011          0        ff      2  180       0.5 random_slicing
 
 Resume the long-running task by `cached` results
 ------------------------------------------------
@@ -162,6 +162,16 @@ Run `traversing` benchmark
 mat.list <- list(bigmemory = bm, ff = fm, h5 = hm)
 res <- mbenchmark(mat.list, type = "traversing")
 ```
+
+    ## rowSums
+
+    ## colSums
+
+``` r
+autoplot(res)
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
 Todo
 ----
