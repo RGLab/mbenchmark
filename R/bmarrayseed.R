@@ -78,12 +78,15 @@ setMethod("dim", "BMArraySeed", function(x)as.integer(dim(x@obj)))
 
   i <- index[[1]]
   j <- index[[2]]
-  if(length(i) > 0&&length(j) > 0)
-    thiscall <- quote(x[i,j])
-  else if(length(j) == 0)
-    thiscall <- quote(x[i,])
+  if(!is.null(i) > 0&&!is.null(j) > 0)
+    thiscall <- quote(x[i,j, drop = FALSE])
+  else if(!is.null(i) > 0)
+    thiscall <- quote(x[i,, drop = FALSE])
+  else if(!is.null(j) > 0)
+    thiscall <- quote(x[,j, drop = FALSE])
   else
-    thiscall <- quote(x[,j])
+    thiscall <- quote(x[,, drop = FALSE])
+
   as.matrix(eval(thiscall))
 }
 
