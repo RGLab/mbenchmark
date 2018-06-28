@@ -97,7 +97,8 @@ mbenchmark_subsetting <- function(x, type = c("random_slicing", "region_selectio
           {
             if(clear_page_cache)
             {
-              stop("clear_page_cache not supported yet!")
+              # stop("clear_page_cache not supported yet!")
+              drop_page_cahce()
             }
 
             records <- new.env(parent = emptyenv())

@@ -25,7 +25,8 @@ mbenchmark_traversing <- function(x, type = c("rowSums", "colSums")
     {
       if(clear_page_cache)
       {
-        stop("clear_page_cache not supported yet!")
+        # stop("clear_page_cache not supported yet!")
+        drop_page_cahce()
       }
 
       records <- new.env(parent = emptyenv())

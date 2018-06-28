@@ -111,15 +111,15 @@ utils:::format.object_size(file.size(mm.file), units = "Mb")
 #
 # plot_mem(res, units = "Kb") + scale_y_log10()
 
-res_stats.file <- file.path(path, "mbenchres_stats.csv")
-if(!file.exists(res_stats.file))
-{
-  options(mc.cores = 1L)#bpApply somehow breaks for multicore
-  res_stats <- mbenchmark(mat.list, type = "traversing", ubound = 1)
-  data.table::fwrite(res_stats, file = res_stats.file)
+# res_stats.file <- file.path(path, "mbenchres_stats.csv")
+# if(!file.exists(res_stats.file))
+# {
+#   options(mc.cores = 1L)#bpApply somehow breaks for multicore
+#   res_stats <- mbenchmark(mat.list, type = "traversing", ubound = 1)
+#   data.table::fwrite(res_stats, file = res_stats.file)
+#
+# }
 
-}
-
-# res_stats <- data.table::fread(file = res_stats.file)
-# class(res_stats) <- c("mbenchmark_traversal", class(res_stats))
-# autoplot(res_stats)
+res_stats <- data.table::fread(file = res_stats.file)
+class(res_stats) <- c("mbenchmark_traversing", class(res_stats))
+autoplot(res_stats)

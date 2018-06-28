@@ -39,4 +39,8 @@ plot_mem <- function(object, units = "Kb"){
   p
 }
 
+drop_page_cahce <- function(){
+  cmd <- paste0("sudo bash ", system.file("script/drop_cache.sh", package = "mbenchmark"))
+  system(cmd, intern = TRUE)
 
+}
