@@ -1,5 +1,6 @@
 #can't skip this class because big.matrix class already has dim method defined but return numberic instead of integer
 #thus incompatible with DelayedArray. So we will need this class for proper method dispatch
+#also [] method for bm doesn't support NULL idx
 #' @exportClass BMArraySeed
 #' @import DelayedArray
 #' @importClassesFrom  bigmemoryExtras BigMatrix
@@ -51,7 +52,7 @@ BMArraySeed <- function(obj, type=NA)
   #                  "former."))
   # }
   # chunkdim <- h5chunkdim(filepath, name)
-  new2("BMArraySeed"
+  new("BMArraySeed"
        , obj = obj
        # , filepath=filepath,
        # name=name,
@@ -77,13 +78,12 @@ setMethod("dim", "BMArraySeed", function(x)as.integer(dim(x@obj)))
 
   i <- index[[1]]
   j <- index[[2]]
-  thiscall <- quote(`[`(x))
-  thiscall <- as.call(as.list(thiscall))
-  if(length(i) > 0)
-    thiscall[["i"]] <- i
-  if(length(j) > 0)
-    thiscall[["j"]] <- j
-  # browser()
+  if(length(i) > 0&&length(j) > 0)
+    thiscall <- quote(x[i,j])
+  else if(length(j) == 0)
+    thiscall <- quote(x[i,])
+  else
+    thiscall <- quote(x[,j])
   as.matrix(eval(thiscall))
 }
 

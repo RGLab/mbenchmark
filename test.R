@@ -1,3 +1,4 @@
+#+ message = FALSE, warning = FALSE
 library(HDF5Array)#must load it first to avoid namespace conflicting
 library(DelayedArray)
 library(mbenchmark)
@@ -7,12 +8,13 @@ library(rhdf5)
 h5.file <- file.path(path, "gz_chunk_by_gene_sub.h5")
 hm = HDF5Array(h5.file, "data")
 dims <- dim(hm)
+dims
 nblocks <- 100
 
-# h5.uncomp <- file.path(path, "uncompress_by_gene_sub.h5")
-# hm.uncomp = HDF5Array(h5.uncomp, "data")
-# h5.1k_by_1k <- file.path(path, "gz_1k_1k_sub.h5")
-# hm.1k_by_1k = HDF5Array(h5.uncomp, "data")
+h5.uncomp <- file.path(path, "uncompress_by_gene_sub.h5")
+hm.uncomp = HDF5Array(h5.uncomp, "data")
+h5.100_x_200 <- file.path(path, "gz_100_200_sub.h5")
+hm.100_x_200 = HDF5Array(h5.100_x_200, "data")
 
 #bigmemory
 library(bigmemory)
@@ -36,8 +38,12 @@ bm.desc <- file.path(path, "bm.desc")
 # bm <- readRDS(bm.file)
 bm <- attach.big.matrix(bm.desc)
 bmseed <- BMArraySeed(bm)
-bm <- DelayedArray(bmseed)
+dim(extract_array(bmseed, list(1:3, NULL)))
+dim(mbenchmark:::.extract_array(bmseed@obj, list(4:2, NULL)))
 
+
+bm <- DelayedArray(bmseed)
+bm
 
 
 library(ff)
@@ -75,7 +81,7 @@ mm <- DelayedArray(mm)
 
 
 ## Compare disk usage
-mat.list <- list(bigmemory = bm, ff = fm, h5 = hm, matter = mm)
+mat.list <- list(bigmemory = bm, ff = fm, h5.by_col = hm, h5.uncomp=hm.uncomp, h5.100_x_200 = hm.100_x_200, matter = mm)
 
 utils:::format.object_size(file.size(bm.file), units = "Mb")
 utils:::format.object_size(file.size(h5.file), units = "Mb")
@@ -92,7 +98,7 @@ utils:::format.object_size(file.size(mm.file), units = "Mb")
 #                                , times = 3
 #                                )
 cache.file <- file.path(path, "mbenchres.csv")
-res <- mbenchmark(mat.list, type = "subsetting"
+suppressWarnings(res <- mbenchmark(mat.list, type = "subsetting"
                   , times = 5
                   , ubound = 0.1
                   , nsubset = 5
@@ -100,11 +106,11 @@ res <- mbenchmark(mat.list, type = "subsetting"
                   # , shape = c(1)
                   , trace_mem = TRUE
                   , cache.file = cache.file
-                  , verbose = T)
+                  , verbose = T))
 
 
-res <- data.table::fread(file = cache.file)
-class(res) <- c("mbenchmark_subsetting", class(res))
-autoplot(res) + scale_y_log10()
-
-plot_mem(res, units = "Kb") + scale_y_log10()
+# res <- data.table::fread(file = cache.file)
+# class(res) <- c("mbenchmark_subsetting", class(res))
+# autoplot(res) + scale_y_log10()
+#
+# plot_mem(res, units = "Kb") + scale_y_log10()
