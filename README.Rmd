@@ -108,9 +108,10 @@ plot_mem(res, units = "Kb")
 ```
 
 ## Run `traversing` benchmark
-```{r eval=FALSE}
+```{r}
 mat.list <- list(bigmemory = bm, ff = fm, h5 = hm)
 res <- mbenchmark(mat.list, type = "traversing")
+autoplot(res)
 ```
 
 ## Todo

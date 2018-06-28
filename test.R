@@ -38,12 +38,8 @@ bm.desc <- file.path(path, "bm.desc")
 # bm <- readRDS(bm.file)
 bm <- attach.big.matrix(bm.desc)
 bmseed <- BMArraySeed(bm)
-dim(extract_array(bmseed, list(1:3, NULL)))
-dim(mbenchmark:::.extract_array(bmseed@obj, list(4:2, NULL)))
-
 
 bm <- DelayedArray(bmseed)
-bm
 
 
 library(ff)
@@ -97,16 +93,16 @@ utils:::format.object_size(file.size(mm.file), units = "Mb")
 #                                # ,as.matrix(mm[ridx, ridx])
 #                                , times = 3
 #                                )
-cache.file <- file.path(path, "mbenchres.csv")
-suppressWarnings(res <- mbenchmark(mat.list, type = "subsetting"
-                  , times = 5
-                  , ubound = 0.1
-                  , nsubset = 5
-                  , shape = c(0.01, 0.5, 1, 2, 100)
-                  # , shape = c(1)
-                  , trace_mem = TRUE
-                  , cache.file = cache.file
-                  , verbose = T))
+# cache.file <- file.path(path, "mbenchres.csv")
+# suppressWarnings(res <- mbenchmark(mat.list, type = "subsetting"
+#                   , times = 5
+#                   , ubound = 0.1
+#                   , nsubset = 5
+#                   , shape = c(0.01, 0.5, 1, 2, 100)
+#                   # , shape = c(1)
+#                   , trace_mem = TRUE
+#                   , cache.file = cache.file
+#                   , verbose = T))
 
 
 # res <- data.table::fread(file = cache.file)
@@ -114,3 +110,12 @@ suppressWarnings(res <- mbenchmark(mat.list, type = "subsetting"
 # autoplot(res) + scale_y_log10()
 #
 # plot_mem(res, units = "Kb") + scale_y_log10()
+
+res_stats.file <- file.path(path, "mbenchres_stats.csv")
+
+res_stats <- mbenchmark(mat.list, type = "traversing", ubound = 0.001)
+data.table::fwrite(res_stats, file = res_stats.file)
+
+# res_stats <- data.table::fread(file = res_stats.file)
+# class(res_stats) <- c("mbenchmark_traversal", class(res_stats))
+# autoplot(res_stats)

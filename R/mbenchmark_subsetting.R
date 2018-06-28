@@ -163,3 +163,16 @@ mbenchmark_subsetting <- function(x, type = c("random_slicing", "region_selectio
   attr(res, "class") <- c("mbenchmark_subsetting", "mbenchmark",attr(res, "class"))
   res
 }
+
+#' @export
+autoplot.mbenchmark_subsetting <- function(object, ...){
+  object <- copy(object)
+  object <- object[, time := mean(time)
+                   , by = c("task", "dataset", "nrow/ncol", "nrow")
+                   ]
+  object <- object[, `nrow/ncol` := paste0("nrow/ncol = ", `nrow/ncol`)]
+  p <-  ggplot(object, aes(x = nrow, y = time, color = dataset)) + geom_point() + geom_line()
+  p <- p + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  p <- p + facet_grid(task~`nrow/ncol`, scales="free")
+  p
+}
