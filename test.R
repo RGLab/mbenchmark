@@ -93,16 +93,17 @@ utils:::format.object_size(file.size(mm.file), units = "Mb")
 #                                # ,as.matrix(mm[ridx, ridx])
 #                                , times = 3
 #                                )
-# cache.file <- file.path(path, "mbenchres.csv")
-# suppressWarnings(res <- mbenchmark(mat.list, type = "subsetting"
-#                   , times = 5
-#                   , ubound = 0.1
-#                   , nsubset = 5
-#                   , shape = c(0.01, 0.5, 1, 2, 100)
-#                   # , shape = c(1)
-#                   , trace_mem = TRUE
-#                   , cache.file = cache.file
-#                   , verbose = T))
+cache.file <- file.path(path, "mbenchres_dropcache.csv")
+suppressWarnings(res <- mbenchmark(mat.list, type = "subsetting"
+                  , times = 5
+                  , ubound = 0.1
+                  , nsubset = 5
+                  , shape = c(0.01, 0.5, 1, 2, 100)
+                  # , shape = c(1)
+                  , trace_mem = TRUE
+                  , cache.file = cache.file
+                  , clear_page_cache = T
+                  , verbose = T))
 
 
 # res <- data.table::fread(file = cache.file)
@@ -111,15 +112,15 @@ utils:::format.object_size(file.size(mm.file), units = "Mb")
 #
 # plot_mem(res, units = "Kb") + scale_y_log10()
 
-# res_stats.file <- file.path(path, "mbenchres_stats.csv")
-# if(!file.exists(res_stats.file))
-# {
-#   options(mc.cores = 1L)#bpApply somehow breaks for multicore
-#   res_stats <- mbenchmark(mat.list, type = "traversing", ubound = 1)
-#   data.table::fwrite(res_stats, file = res_stats.file)
-#
-# }
+res_stats.file <- file.path(path, "mbenchres_stats_dropcache.csv")
+if(!file.exists(res_stats.file))
+{
+  options(mc.cores = 1L)#bpApply somehow breaks for multicore
+  res_stats <- mbenchmark(mat.list, type = "traversing", ubound = 1, clear_page_cache = T)
+  data.table::fwrite(res_stats, file = res_stats.file)
 
-res_stats <- data.table::fread(file = res_stats.file)
-class(res_stats) <- c("mbenchmark_traversing", class(res_stats))
-autoplot(res_stats)
+}
+
+# res_stats <- data.table::fread(file = res_stats.file)
+# class(res_stats) <- c("mbenchmark_traversing", class(res_stats))
+# autoplot(res_stats)
