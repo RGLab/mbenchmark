@@ -3,7 +3,6 @@
 #also [] method for bm doesn't support NULL idx
 #' @exportClass BMArraySeed
 #' @import DelayedArray
-#' @importClassesFrom  bigmemoryExtras BigMatrix
 setClass("BMArraySeed",
          contains="Array",
          representation(
